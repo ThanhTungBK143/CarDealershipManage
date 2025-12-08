@@ -5,31 +5,30 @@ include "auth_check.php";
 $message = '';
 $message_type = '';
 
-// 2. XỬ LÝ THÊM KHÁCH HÀNG
-if (isset($_POST["add_customer"])) {
-    // Làm sạch dữ liệu đầu vào
+/if (isset($_POST["add_customer"])) {
+    // Sanitize input data
     $full_name = mysqli_real_escape_string($link, $_POST["full_name"]);
     $email = mysqli_real_escape_string($link, $_POST["email"]);
     $phone = mysqli_real_escape_string($link, $_POST["phone"]);
     $address = mysqli_real_escape_string($link, $_POST["address"]);
 
-    // Kiểm tra xem Email hoặc SĐT đã tồn tại chưa (Tránh trùng lặp)
+    // Check if Email or Phone already exists (Avoid duplicates)
     $check_query = "SELECT * FROM customers WHERE email = '$email' OR phone = '$phone'";
     $check_res = mysqli_query($link, $check_query);
 
     if (mysqli_num_rows($check_res) > 0) {
-        $message = "Lỗi: Email hoặc Số điện thoại này đã tồn tại trong hệ thống!";
+        $message = "Error: This Email or Phone number already exists in the system!";
         $message_type = 'danger';
     } else {
-        // Thực hiện Insert
+        // Execute Insert
         $sql_insert = "INSERT INTO customers (full_name, email, phone, address) 
-                       VALUES ('$full_name', '$email', '$phone', '$address')";
+                        VALUES ('$full_name', '$email', '$phone', '$address')";
 
         if (mysqli_query($link, $sql_insert)) {
-            $message = "Thêm thành công khách hàng: <b>$full_name</b>!";
+            $message = "Successfully added new customer: <b>$full_name</b>!";
             $message_type = 'success';
         } else {
-            $message = "Lỗi hệ thống: " . mysqli_error($link);
+            $message = "System Error: " . mysqli_error($link);
             $message_type = 'danger';
         }
     }
