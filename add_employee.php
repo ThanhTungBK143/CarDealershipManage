@@ -2,7 +2,8 @@
 include "connection.php";
 include "auth_check.php";
 
-$current_user_role = isset($_SESSION['role']) ? strtolower($_SESSION['role']) : '';
+// 2. CHECK ADMIN PERMISSION
+$current_user_role = isset($_SESSION['role']) ? strtolower($_SESSION['role']) : '';// isset() kiểm tra xem biến có tồn tại không 
 
 if ($current_user_role !== 'admin') {
     echo "<script>alert('Access Denied! Only Administrators can add employees.'); window.location='homepage.php';</script>";
@@ -12,29 +13,53 @@ if ($current_user_role !== 'admin') {
 $message = '';
 $message_type = '';
 
+// 3. HANDLE FORM SUBMISSION
+// 3. HANDLE FORM SUBMISSION
 if (isset($_POST["add_new"])) {
+    // 1. Get and sanitize input data
     $username = mysqli_real_escape_string($link, $_POST["username"]);
     $password = mysqli_real_escape_string($link, $_POST["password"]);
     $email = mysqli_real_escape_string($link, $_POST["email"]);
     $phone = mysqli_real_escape_string($link, $_POST["phone"]);
     
-    $role = 'sale';
-
+    $role = 'sale'; 
     $password_hash = md5($password);
 
-    $sql_insert = "INSERT INTO users (username, password, email, phone, role) 
-                   VALUES ('$username', '$password_hash', '$email', '$phone', '$role')";
+     // Check if any user exists with the same Username OR Email OR Phone
+    $check_sql = "SELECT * FROM users WHERE username = '$username' OR email = '$email' OR phone = '$phone'";
+    $check_result = mysqli_query($link, $check_sql);
 
-    if (mysqli_query($link, $sql_insert)) {
-        $message = "Successfully added new Sale Staff: <b>$username</b>!";
-        $message_type = 'success';
-    } else {
-        if (mysqli_errno($link) == 1062) {
-             $message = "Error: Username '$username' already exists.";
+    // If at least 1 row is found -> Duplicate information exists
+    if (mysqli_num_rows($check_result) > 0) {
+        // Fetch the existing user data to compare and find out exactly what is duplicated
+        $existing_user = mysqli_fetch_assoc($check_result);
+        
+        if ($existing_user['username'] === $username) {
+            $message = "Error: Username <b>'$username'</b> is already taken!";
+        } elseif ($existing_user['email'] === $email) {
+            $message = "Error: Email <b>'$email'</b> already exists in the system!";
+        } elseif ($existing_user['phone'] === $phone) {
+            $message = "Error: Phone number <b>'$phone'</b> is already registered!";
         } else {
-             $message = "System Error: " . mysqli_error($link);
+            // Fallback for rare cases
+            $message = "Error: The entered information already exists in the system!";
         }
-        $message_type = 'danger';
+        
+        $message_type = 'danger'; // Red alert
+
+    } else {
+        // --- IF NO DUPLICATES FOUND, PROCEED TO INSERT ---
+
+        $sql_insert = "INSERT INTO users (username, password, email, phone, role) 
+                       VALUES ('$username', '$password_hash', '$email', '$phone', '$role')";
+
+        if (mysqli_query($link, $sql_insert)) {
+            $message = "Successfully added new Sale Staff: <b>$username</b>!";
+            $message_type = 'success'; // Green alert
+        } else {
+            $message = "System Error: " . mysqli_error($link);
+            $message_type = 'danger';
+        }
     }
 }
 ?>
@@ -55,22 +80,28 @@ if (isset($_POST["add_new"])) {
             font-family: 'Nunito', sans-serif; 
             color: #5a5c69; 
         }
-        .navbar-custom { 
-            background-color: #fff; 
-            box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15); 
-        }
-        .card-custom {
+        .navbar-custom {
+             background-color: #fff; 
+             box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15); 
+            }
+        .card-custom { 
             border: none; 
             border-radius: 15px; 
             box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15); 
-            margin-top: 50px; }
+            margin-top: 50px; 
+        }
         .card-header-custom { 
             background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%); 
-            color: white; padding: 20px; font-weight: 700; text-align: center; border-radius: 15px 15px 0 0; 
+            color: white; 
+            padding: 20px; 
+            font-weight: 700; 
+            text-align: center; 
+            border-radius: 15px 15px 0 0; 
         }
         .btn-add { 
             background-color: #1cc88a; 
-            color: white; border-radius: 50px; 
+            color: white; 
+            border-radius: 50px; 
             padding: 10px 30px; 
             font-weight: bold; 
             width: 100%; 
@@ -78,8 +109,7 @@ if (isset($_POST["add_new"])) {
         }
         .btn-add:hover { 
             background-color: #17a673; 
-            color: white; 
-            box-shadow: 0 4px 10px rgba(28, 200, 138, 0.4); 
+            color: white; box-shadow: 0 4px 10px rgba(28, 200, 138, 0.4); 
             transform: translateY(-2px); 
             transition: all 0.3s;
         }
@@ -100,7 +130,7 @@ if (isset($_POST["add_new"])) {
         }
         .input-group-text { 
             background-color: #f8f9fc; 
-            color: #1cc88a;
+            color: #1cc88a; 
             border: 1px solid #ced4da; 
         }
         .form-control:focus { 
