@@ -75,3 +75,5 @@ INSERT INTO sales_transactions (customer_id, product_id, sales_user_id, quantity
 (5, 9, 2, 2, '2025-11-23 15:30:00'), 
 (1, 10, 1, 1, '2025-11-24 10:00:00'), 
 (2, 5, 3, 1, '2025-11-25 08:45:00'); 
+
+ALTER TABLE cars ADD COLUMN image VARCHAR(255) DEFAULT 'default.jpg';
