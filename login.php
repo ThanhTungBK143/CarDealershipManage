@@ -4,7 +4,7 @@ session_start();
 
 $error_message = '';
 
-// Nếu đã đăng nhập thì chuyển hướng
+// Nếu đã đăng nhập thì chuyển hướng vào trong
 if (isset($_SESSION['username'])) {
     header('location:homepage.php');
     exit();
@@ -17,12 +17,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $username = mysqli_real_escape_string($link, $_POST['username']);
         $password_input = $_POST['password'];
-        $remember = isset($_POST['remember']); // Kiểm tra checkbox
+        $remember = isset($_POST['remember']); 
 
-        // Giữ nguyên MD5 theo yêu cầu của bạn
         $password_md5 = MD5($password_input); 
 
-        // Kiểm tra User & Pass
         $query = "SELECT id, username, role FROM users WHERE username=? AND password=?";
         $stmt = mysqli_prepare($link, $query);
         
@@ -36,27 +34,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (mysqli_num_rows($result) === 1) {
                 $row = mysqli_fetch_assoc($result);
                 
-                // 1. LƯU SESSION (Lớp bảo mật 1)
                 $_SESSION['username'] = $row['username'];
                 $_SESSION['role'] = $row['role']; 
                 $_SESSION['user_id_from_db'] = $row['id']; 
 
-                // 2. XỬ LÝ REMEMBER ME (Lớp bảo mật 2 - Cookie & Token)
                 if ($remember) {
-                    // Tạo token ngẫu nhiên an toàn
                     $token = bin2hex(random_bytes(32));
-                    // Hết hạn sau 30 ngày
                     $expire_time = time() + (86400 * 30);
                     $user_id = $row['id'];
 
-                    // Cập nhật Token vào Database
                     $update_sql = "UPDATE users SET login_token = ?, token_expire = ? WHERE id = ?";
                     $stmt_update = mysqli_prepare($link, $update_sql);
                     mysqli_stmt_bind_param($stmt_update, "sii", $token, $expire_time, $user_id);
                     mysqli_stmt_execute($stmt_update);
                     mysqli_stmt_close($stmt_update);
 
-                    // Lưu Cookie vào trình duyệt
                     setcookie('remember_token', $token, $expire_time, "/");
                 }
 
@@ -107,15 +99,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .form-control:focus { box-shadow: none; border-bottom: 2px solid #007bff; background-color: #f9fcff; }
         .form-group { margin-bottom: 30px; position: relative; }
         .form-icon { position: absolute; right: 10px; top: 20px; color: #aaa; }
+        
+        /* Buttons Style */
         .btn-custom {
-            background: linear-gradient(to right, #0062E6, #33AEFF); border: none; color: white; padding: 15px;
-            border-radius: 50px; font-weight: bold; font-size: 18px; box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+            background: linear-gradient(to right, #0062E6, #33AEFF); border: none; color: white; padding: 12px;
+            border-radius: 50px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
             transition: transform 0.2s;
         }
-        .btn-custom:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 123, 255, 0.6); color: white; }
+        .btn-custom:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6); color: white; }
+
+        .btn-cancel {
+            background: #e2e6ea; border: 1px solid #d1d3e2; color: #5a5c69; padding: 12px;
+            border-radius: 50px; font-weight: bold; font-size: 16px;
+            transition: all 0.2s; text-decoration: none; display: block; text-align: center;
+        }
+        .btn-cancel:hover { background-color: #d1d3e2; color: #333; text-decoration: none; }
+
         .alert-custom { border-radius: 10px; font-size: 14px; }
-        
-        /* Style cho Checkbox mới */
         .custom-control-input:checked ~ .custom-control-label::before {
             color: #fff; border-color: #007bff; background-color: #007bff;
         }
@@ -160,8 +160,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <input type="checkbox" class="custom-control-input" id="rememberCheck" name="remember">
                         <label class="custom-control-label text-muted" for="rememberCheck">Remember me for 30 days</label>
                     </div>
-
-                    <button type="submit" class="btn btn-custom btn-block mt-4">LOGIN</button>
+                    
+                    <div class="row mt-4">
+                        <div class="col-6 pr-2">
+                            <a href="index.php" class="btn btn-cancel btn-block" onclick="return confirm('Bạn muốn hủy đăng nhập?');">CANCEL</a>
+                        </div>
+                        <div class="col-6 pl-2">
+                            <button type="submit" class="btn btn-custom btn-block">LOGIN</button>
+                        </div>
+                    </div>
                     
                     <div class="text-center mt-4">
                         <small class="text-muted">Test Accounts: admin/12345 | sale1/pass123</small>
