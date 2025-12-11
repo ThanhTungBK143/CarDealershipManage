@@ -5,30 +5,31 @@ include "auth_check.php";
 $message = '';
 $message_type = '';
 
-/if (isset($_POST["add_customer"])) {
-    // Sanitize input data
+// 2. XỬ LÝ THÊM KHÁCH HÀNG
+if (isset($_POST["add_customer"])) {
+    // Làm sạch dữ liệu đầu vào
     $full_name = mysqli_real_escape_string($link, $_POST["full_name"]);
     $email = mysqli_real_escape_string($link, $_POST["email"]);
     $phone = mysqli_real_escape_string($link, $_POST["phone"]);
     $address = mysqli_real_escape_string($link, $_POST["address"]);
 
-    // Check if Email or Phone already exists (Avoid duplicates)
+    // Kiểm tra xem Email hoặc SĐT đã tồn tại chưa (Tránh trùng lặp)
     $check_query = "SELECT * FROM customers WHERE email = '$email' OR phone = '$phone'";
     $check_res = mysqli_query($link, $check_query);
 
     if (mysqli_num_rows($check_res) > 0) {
-        $message = "Error: This Email or Phone number already exists in the system!";
+        $message = "Lỗi: Email hoặc Số điện thoại này đã tồn tại trong hệ thống!";
         $message_type = 'danger';
     } else {
-        // Execute Insert
+        // Thực hiện Insert
         $sql_insert = "INSERT INTO customers (full_name, email, phone, address) 
-                        VALUES ('$full_name', '$email', '$phone', '$address')";
+                       VALUES ('$full_name', '$email', '$phone', '$address')";
 
         if (mysqli_query($link, $sql_insert)) {
-            $message = "Successfully added new customer: <b>$full_name</b>!";
+            $message = "Thêm thành công khách hàng: <b>$full_name</b>!";
             $message_type = 'success';
         } else {
-            $message = "System Error: " . mysqli_error($link);
+            $message = "Lỗi hệ thống: " . mysqli_error($link);
             $message_type = 'danger';
         }
     }
@@ -48,67 +49,33 @@ $message_type = '';
 
     <style>
         body { background-color: #f8f9fc; font-family: 'Nunito', sans-serif; color: #5a5c69; }
-        .navbar-custom { 
-            background-color: #fff; 
-            box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15); 
-        }
-        .navbar-brand { 
-            color: #4e73df !important; 
-            font-weight: 800; 
-        }
-        .card-custom { 
-            border: none; 
-            border-radius: 15px; 
-            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15); 
-            margin-top: 50px; 
-        }
+        
+        /* Navbar */
+        .navbar-custom { background-color: #fff; box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15); }
+        .navbar-brand { color: #4e73df !important; font-weight: 800; }
+        
+        /* Card Style */
+        .card-custom { border: none; border-radius: 15px; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15); margin-top: 50px; }
         
         .card-header-custom { 
+            /* Màu Vàng Cam (Đặc trưng cho Customer) */
             background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%); 
-            color: white; 
-            padding: 20px; 
-            font-weight: 700; 
-            text-align: center; 
-            border-radius: 15px 15px 0 0; 
-        }
-        .btn-add { 
-            background-color: #f6c23e; 
-            color: white; border-radius: 50px; 
-            padding: 10px 30px; 
-            font-weight: bold; 
-            width: 100%; 
-            border: none;
-        }
-        .btn-add:hover { 
-            background-color: #dda20a; 
-            color: white; 
-            box-shadow: 0 4px 10px rgba(246, 194, 62, 0.4); 
-            transform: translateY(-2px); 
-            transition: all 0.3s;
+            color: white; padding: 20px; font-weight: 700; text-align: center; border-radius: 15px 15px 0 0; 
         }
         
-        .btn-back { 
-            border-radius: 50px; 
-            width: 100%; 
-            border: 2px solid #858796; 
-            color: #858796; 
-            font-weight: bold; 
-            padding: 10px 30px; 
-            text-align: center; 
-            display: block;}
-        .btn-back:hover { 
-            background-color: #858796; 
-            color: white; 
-            text-decoration: none;}
-
-        .input-group-text { 
-            background-color: #f8f9fc; 
-            color: #f6c23e; 
-            border: 1px solid #ced4da; }
-        .form-control:focus { 
-            border-color: #f6c23e; 
-            box-shadow: 0 0 0 0.2rem rgba(246, 194, 62, 0.25); 
+        /* Buttons */
+        .btn-add { 
+            background-color: #f6c23e; color: white; border-radius: 50px; padding: 10px 30px; font-weight: bold; width: 100%; border: none;
         }
+        .btn-add:hover { 
+            background-color: #dda20a; color: white; box-shadow: 0 4px 10px rgba(246, 194, 62, 0.4); transform: translateY(-2px); transition: all 0.3s;
+        }
+        
+        .btn-back { border-radius: 50px; width: 100%; border: 2px solid #858796; color: #858796; font-weight: bold; padding: 10px 30px; text-align: center; display: block;}
+        .btn-back:hover { background-color: #858796; color: white; text-decoration: none;}
+
+        .input-group-text { background-color: #f8f9fc; color: #f6c23e; border: 1px solid #ced4da; }
+        .form-control:focus { border-color: #f6c23e; box-shadow: 0 0 0 0.2rem rgba(246, 194, 62, 0.25); }
     </style>
 </head>
 <body>
