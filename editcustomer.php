@@ -2,20 +2,15 @@
 include "connection.php";
 include "auth_check.php";
 
-// 2. KIỂM TRA QUYỀN ADMIN (CHẶN SALE)
-// Sale không được phép vào trang này
-$current_role = isset($_SESSION['role']) ? strtolower($_SESSION['role']) : '';
-if ($current_role !== 'admin') {
-    echo "<script>alert('Truy cập bị từ chối! Chỉ Admin mới được sửa thông tin khách hàng.'); window.location='customer.php';</script>";
-    exit();
-}
+// [ĐÃ XÓA] PHẦN KIỂM TRA QUYỀN ADMIN
+// Bây giờ Sale cũng được phép vào đây để sửa thông tin
 
 // 3. LẤY ID KHÁCH HÀNG
 if (!isset($_GET['id'])) {
     header('location:customer.php');
     exit();
 }
-$id = intval($_GET["id"]); // Ép kiểu số để bảo mật
+$id = intval($_GET["id"]); 
 
 $message = '';
 $message_type = '';
@@ -55,38 +50,19 @@ $row = mysqli_fetch_assoc($res);
     <title>Sửa Thông Tin Khách Hàng</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700,800&display=swap" rel="stylesheet">
-
     <style>
         body { background-color: #f8f9fc; font-family: 'Nunito', sans-serif; color: #5a5c69; }
-        
-        /* Navbar */
         .navbar-custom { background-color: #fff; box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15); }
         .navbar-brand { color: #4e73df !important; font-weight: 800; }
-        
-        /* Card Style */
         .card-custom { border: none; border-radius: 15px; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15); margin-top: 50px; }
-        
-        .card-header-custom { 
-            /* Màu Vàng Cam (Đặc trưng cho Customer) */
-            background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%); 
-            color: white; padding: 20px; font-weight: 700; text-align: center; border-radius: 15px 15px 0 0; 
-        }
-        
-        /* Buttons */
-        .btn-update { 
-            background-color: #f6c23e; color: white; border-radius: 50px; padding: 10px 30px; font-weight: bold; width: 100%; border: none;
-        }
-        .btn-update:hover { 
-            background-color: #dda20a; color: white; box-shadow: 0 4px 10px rgba(246, 194, 62, 0.4); transform: translateY(-2px); transition: all 0.3s;
-        }
-        
+        .card-header-custom { background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%); color: white; padding: 20px; font-weight: 700; text-align: center; border-radius: 15px 15px 0 0; }
+        .btn-update { background-color: #f6c23e; color: white; border-radius: 50px; padding: 10px 30px; font-weight: bold; width: 100%; border: none; }
+        .btn-update:hover { background-color: #dda20a; color: white; box-shadow: 0 4px 10px rgba(246, 194, 62, 0.4); transform: translateY(-2px); transition: all 0.3s; }
         .btn-back { border-radius: 50px; width: 100%; border: 2px solid #858796; color: #858796; font-weight: bold; padding: 10px 30px; text-align: center; display: block;}
         .btn-back:hover { background-color: #858796; color: white; text-decoration: none;}
-
         .input-group-text { background-color: #f8f9fc; color: #f6c23e; border: 1px solid #ced4da; }
         .form-control:focus { border-color: #f6c23e; box-shadow: 0 0 0 0.2rem rgba(246, 194, 62, 0.25); }
     </style>
@@ -98,7 +74,7 @@ $row = mysqli_fetch_assoc($res);
         <a class="navbar-brand" href="customer.php">
             <i class="fas fa-arrow-left mr-2"></i> BACK TO LIST
         </a>
-        <span class="navbar-text ml-auto">Admin: <b><?php echo $_SESSION['username']; ?></b></span>
+        <span class="navbar-text ml-auto">User: <b><?php echo $_SESSION['username']; ?></b></span>
     </div>
 </nav>
 
@@ -165,7 +141,6 @@ $row = mysqli_fetch_assoc($res);
         </div>
     </div>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
