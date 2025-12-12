@@ -1,13 +1,6 @@
 <?php
 include "connection.php";
-session_start();
-
-// 1. CHECK LOGIN
-if (!isset($_SESSION['username'])) {
-    header('location:login.php');
-    exit();
-}
-
+include "auth_check.php";
 $sales_user_id = isset($_SESSION['user_id_from_db']) ? $_SESSION['user_id_from_db'] : 1; 
 
 // 2. GET CUSTOMER INFO
