@@ -1,8 +1,8 @@
 <?php
 include "connection.php";
-include "auth_check.php";
+include "auth_check.php"; // Đã bao gồm session_start
 
-// 2. CHECK PERMISSION (ONLY ADMIN CAN ACCESS)
+// 2. CHECK PERMISSION
 $role = isset($_SESSION['role']) ? strtolower($_SESSION['role']) : 'sale';
 if ($role !== 'admin') {
     echo "<script>alert('Access Denied! Only Administrators can add new cars.'); window.location='car.php';</script>";
@@ -21,6 +21,7 @@ if(isset($_POST["insert"])) {
     $price = (float)$_POST['price'];
     
     // --- XỬ LÝ UPLOAD ẢNH ---
+<<<<<<< Updated upstream
     $image_filename = "default.jpg"; // Ảnh mặc định nếu không upload
     
     if (isset($_FILES['car_image']) && $_FILES['car_image']['error'] == 0) {
@@ -58,6 +59,54 @@ if(isset($_POST["insert"])) {
     } else {
         $message = "Database Error: " . mysqli_error($link);
         $message_type = "danger";
+=======
+    $image_filename = "default.jpg"; // Mặc định
+    
+    // Kiểm tra và tạo thư mục uploads nếu chưa có
+    if (!file_exists('uploads')) {
+        mkdir('uploads', 0777, true);
+    }
+
+    if (isset($_FILES['car_image']) && $_FILES['car_image']['error'] == 0) {
+        $allowed = array("jpg" => "image/jpg", "jpeg" => "image/jpeg", "png" => "image/png");
+        $filename = $_FILES["car_image"]["name"];
+        $filesize = $_FILES["car_image"]["size"];
+        
+        // [FIX LỖI 1] Chuyển đuôi file về chữ thường để kiểm tra
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+        if(!array_key_exists($ext, $allowed)) {
+            $message = "Lỗi: Chỉ chấp nhận file JPG hoặc PNG.";
+            $message_type = "danger";
+        } elseif($filesize > 5 * 1024 * 1024) {
+            $message = "Lỗi: Dung lượng file quá lớn (>5MB).";
+            $message_type = "danger";
+        } else {
+            // Đặt tên file mới (Time + Random)
+            $new_filename = time() . "_" . rand(1000, 9999) . "." . $ext;
+            
+            if(move_uploaded_file($_FILES["car_image"]["tmp_name"], "uploads/" . $new_filename)){
+                $image_filename = $new_filename;
+            } else {
+                $message = "Lỗi: Không thể lưu file vào thư mục uploads (Kiểm tra quyền ghi).";
+                $message_type = "danger";
+            }
+        }
+    }
+
+    // [FIX LỖI 2] Chỉ Insert vào DB nếu KHÔNG có lỗi upload ảnh
+    if ($message_type !== "danger") {
+        $sql = "INSERT INTO cars (make, model, year, color, quantity, price, image) 
+                VALUES ('$make','$model','$year','$color','$quantity','$price', '$image_filename')";
+                
+        if(mysqli_query($link, $sql)) {
+            $message = "New car added successfully with image!";
+            $message_type = "success";
+        } else {
+            $message = "Database Error: " . mysqli_error($link);
+            $message_type = "danger";
+        }
+>>>>>>> Stashed changes
     }
 }
 ?>
@@ -67,7 +116,7 @@ if(isset($_POST["insert"])) {
 <head>
     <title>Add New Car</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700,800&display=swap" rel="stylesheet">

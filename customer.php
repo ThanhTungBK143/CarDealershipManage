@@ -2,8 +2,11 @@
 include "connection.php";
 include "auth_check.php";
 
-// Lấy Role từ session (mặc định là sale nếu lỗi)
+// Lấy Role từ session
 $role = isset($_SESSION['role']) ? strtolower($_SESSION['role']) : 'sale';
+
+// [ĐÃ XÓA] LOGIC XỬ LÝ DELETE
+// Bây giờ không ai có thể xóa khách hàng thông qua file này nữa.
 ?>
 
 <!DOCTYPE html>
@@ -89,6 +92,7 @@ $role = isset($_SESSION['role']) ? strtolower($_SESSION['role']) : 'sale';
                                     
                                     echo "<td class='text-center'>";
                                     
+<<<<<<< Updated upstream
                                     // 1. NÚT TẠO GIAO DỊCH
                                     echo "<a href='create_contract.php?customer_id={$c_id}' class='btn btn-success btn-sm btn-action' title='Create Transaction'><i class='fas fa-file-invoice-dollar'></i> Deal</a>";
 
@@ -99,6 +103,20 @@ $role = isset($_SESSION['role']) ? strtolower($_SESSION['role']) : 'sale';
                                             title='Edit Info'>
                                             <i class='fas fa-user-edit'></i> Edit
                                           </a>";
+=======
+                                    // 1. NÚT DEAL (Ai cũng thấy)
+                                    echo "<a href='create_contract.php?customer_id={$c_id}' class='btn btn-success btn-sm btn-action' title='Create Transaction'><i class='fas fa-file-invoice-dollar'></i> Deal</a>";
+
+                                    // 2. NÚT EDIT (Chỉ Admin thấy - Không có nút Delete nữa)
+                                    if ($role === 'admin') {
+                                        echo "<a href='editcustomer.php?id={$c_id}' 
+                                                class='btn btn-warning btn-sm btn-action text-white' 
+                                                title='Edit Info'>
+                                                <i class='fas fa-user-edit'></i> Edit
+                                              </a>";
+                                        // [ĐÃ XÓA] Nút Delete ở đây
+                                    }
+>>>>>>> Stashed changes
                                     
                                     echo "</td>";
                                     echo "</tr>";

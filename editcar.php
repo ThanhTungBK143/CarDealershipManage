@@ -28,6 +28,7 @@ if (isset($_POST["update"])) {
     $quantity = intval($_POST["quantity"]);
     $price    = floatval($_POST["price"]);
 
+<<<<<<< Updated upstream
     // --- XỬ LÝ ẢNH (LOGIC MỚI) ---
     // Mặc định lấy tên ảnh cũ từ input hidden
     $image_filename = $_POST['current_image']; 
@@ -73,8 +74,68 @@ if (isset($_POST["update"])) {
             $message = "Update failed: " . mysqli_error($link);
             $message_type = "danger";
         }
+=======
+    // --- IMAGE HANDLING ---
+    $image_filename = $_POST['current_image']; 
+
+    if (isset($_FILES['car_image']) && $_FILES['car_image']['error'] == 0) {
+        $allowed = array("jpg" => "image/jpg", "jpeg" => "image/jpeg", "png" => "image/png");
+        $filename = basename($_FILES["car_image"]["name"]); 
+        $filesize = $_FILES["car_image"]["size"];
+        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+
+        if(!array_key_exists(strtolower($ext), $allowed)) {
+            $message = "Error: JPG or PNG files only.";
+            $message_type = "danger";
+        } elseif($filesize > 5 * 1024 * 1024) {
+            $message = "Error: File size too large (>5MB).";
+            $message_type = "danger";
+        } else {
+            // Check for duplicate filename
+            $target_path = "uploads/" . $filename;
+
+            if (file_exists($target_path)) {
+                $message = "Error: File named <b>'$filename'</b> already exists. Please rename your file.";
+                $message_type = "danger";
+            } else {
+                // Upload new file
+                if(move_uploaded_file($_FILES["car_image"]["tmp_name"], $target_path)){
+                    // Optional: Delete old image
+                    $old_file = "uploads/" . $image_filename;
+                    if(file_exists($old_file) && $image_filename != 'default.jpg' && !empty($image_filename)){
+                        unlink($old_file);
+                    }
+                    $image_filename = $filename; // Update to new filename
+                } else {
+                    $message = "Error: Failed to upload file.";
+                    $message_type = "danger";
+                }
+            }
+        }
+>>>>>>> Stashed changes
     }
-}
+
+    // Only update DB if no error
+    if ($message_type !== "danger") {
+        $update_query = "UPDATE cars SET 
+                         make='$make', 
+                         model='$model', 
+                         year='$year', 
+                         color='$color', 
+                         quantity='$quantity', 
+                         price='$price',
+                         image='$image_filename' 
+                         WHERE product_id = $product_id";
+
+        if (mysqli_query($link, $update_query)) {
+            echo "<script>alert('Car details updated successfully!'); window.location='car.php';</script>";
+            exit(); 
+        } else {
+            $message = "Update failed: " . mysqli_error($link);
+            $message_type = "danger";
+        }
+    }
+} // <--- THIS WAS THE MISSING BRACE
 
 // Fetch Data
 $query = "SELECT * FROM cars WHERE product_id = $product_id";
@@ -141,6 +202,10 @@ $row = mysqli_fetch_assoc($res);
                                 <label class="font-weight-bold d-block text-left">Current Image</label>
                                 <?php 
                                     $img_path = "uploads/" . $row['image'];
+<<<<<<< Updated upstream
+=======
+                                    // Check if image is empty OR file doesn't exist
+>>>>>>> Stashed changes
                                     if(empty($row['image']) || !file_exists($img_path)) {
                                         $img_path = "https://via.placeholder.com/600x300.png?text=No+Image";
                                     }
@@ -222,7 +287,11 @@ $row = mysqli_fetch_assoc($res);
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script>
+<<<<<<< Updated upstream
     // Hiện tên file khi chọn
+=======
+    // Show selected filename
+>>>>>>> Stashed changes
     $(".custom-file-input").on("change", function() {
         var fileName = $(this).val().split("\\").pop();
         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
