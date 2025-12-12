@@ -92,18 +92,6 @@ $role = isset($_SESSION['role']) ? strtolower($_SESSION['role']) : 'sale';
                                     
                                     echo "<td class='text-center'>";
                                     
-<<<<<<< Updated upstream
-                                    // 1. NÚT TẠO GIAO DỊCH
-                                    echo "<a href='create_contract.php?customer_id={$c_id}' class='btn btn-success btn-sm btn-action' title='Create Transaction'><i class='fas fa-file-invoice-dollar'></i> Deal</a>";
-
-                                    // 2. NÚT SỬA THÔNG TIN (ĐÃ BỎ ĐIỀU KIỆN IF ADMIN)
-                                    // Bây giờ Sale cũng thấy nút này
-                                    echo "<a href='editcustomer.php?id={$c_id}' 
-                                            class='btn btn-warning btn-sm btn-action text-white' 
-                                            title='Edit Info'>
-                                            <i class='fas fa-user-edit'></i> Edit
-                                          </a>";
-=======
                                     // 1. NÚT DEAL (Ai cũng thấy)
                                     echo "<a href='create_contract.php?customer_id={$c_id}' class='btn btn-success btn-sm btn-action' title='Create Transaction'><i class='fas fa-file-invoice-dollar'></i> Deal</a>";
 
@@ -116,7 +104,6 @@ $role = isset($_SESSION['role']) ? strtolower($_SESSION['role']) : 'sale';
                                               </a>";
                                         // [ĐÃ XÓA] Nút Delete ở đây
                                     }
->>>>>>> Stashed changes
                                     
                                     echo "</td>";
                                     echo "</tr>";

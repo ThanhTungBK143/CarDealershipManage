@@ -28,53 +28,6 @@ if (isset($_POST["update"])) {
     $quantity = intval($_POST["quantity"]);
     $price    = floatval($_POST["price"]);
 
-<<<<<<< Updated upstream
-    // --- XỬ LÝ ẢNH (LOGIC MỚI) ---
-    // Mặc định lấy tên ảnh cũ từ input hidden
-    $image_filename = $_POST['current_image']; 
-
-    // Kiểm tra nếu người dùng có chọn ảnh mới
-    if (isset($_FILES['car_image']) && $_FILES['car_image']['error'] == 0) {
-        $allowed = array("jpg" => "image/jpg", "jpeg" => "image/jpeg", "png" => "image/png");
-        $filename = $_FILES["car_image"]["name"];
-        $filesize = $_FILES["car_image"]["size"];
-        $ext = pathinfo($filename, PATHINFO_EXTENSION);
-
-        if(!array_key_exists($ext, $allowed)) {
-            $message = "Lỗi: Chỉ chấp nhận file JPG hoặc PNG.";
-            $message_type = "danger";
-        } elseif($filesize > 5 * 1024 * 1024) {
-            $message = "Lỗi: Dung lượng file quá lớn (>5MB).";
-            $message_type = "danger";
-        } else {
-            // Upload ảnh mới
-            $new_filename = time() . "_" . rand(1000, 9999) . "." . $ext;
-            if(move_uploaded_file($_FILES["car_image"]["tmp_name"], "uploads/" . $new_filename)){
-                $image_filename = $new_filename; // Cập nhật tên file mới để lưu vào DB
-            }
-        }
-    }
-
-    if ($message_type !== "danger") {
-        $update_query = "UPDATE cars SET 
-                         make='$make', 
-                         model='$model', 
-                         year='$year', 
-                         color='$color', 
-                         quantity='$quantity', 
-                         price='$price',
-                         image='$image_filename' 
-                         WHERE product_id = $product_id";
-
-        if (mysqli_query($link, $update_query)) {
-            // [CẬP NHẬT] Thông báo xong nhảy về trang car.php luôn
-            echo "<script>alert('Car details updated successfully!'); window.location='car.php';</script>";
-            exit(); 
-        } else {
-            $message = "Update failed: " . mysqli_error($link);
-            $message_type = "danger";
-        }
-=======
     // --- IMAGE HANDLING ---
     $image_filename = $_POST['current_image']; 
 
@@ -112,7 +65,6 @@ if (isset($_POST["update"])) {
                 }
             }
         }
->>>>>>> Stashed changes
     }
 
     // Only update DB if no error
@@ -202,10 +154,7 @@ $row = mysqli_fetch_assoc($res);
                                 <label class="font-weight-bold d-block text-left">Current Image</label>
                                 <?php 
                                     $img_path = "uploads/" . $row['image'];
-<<<<<<< Updated upstream
-=======
                                     // Check if image is empty OR file doesn't exist
->>>>>>> Stashed changes
                                     if(empty($row['image']) || !file_exists($img_path)) {
                                         $img_path = "https://via.placeholder.com/600x300.png?text=No+Image";
                                     }
@@ -287,11 +236,7 @@ $row = mysqli_fetch_assoc($res);
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script>
-<<<<<<< Updated upstream
-    // Hiện tên file khi chọn
-=======
     // Show selected filename
->>>>>>> Stashed changes
     $(".custom-file-input").on("change", function() {
         var fileName = $(this).val().split("\\").pop();
         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
