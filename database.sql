@@ -27,7 +27,8 @@ CREATE TABLE cars (
     year INT NOT NULL,
     color VARCHAR(30) NOT NULL,
     quantity INT NOT NULL,
-    price DECIMAL(12, 2) NOT NULL
+    price DECIMAL(12, 2) NOT NULL,
+    image VARCHAR(255) DEFAULT 'default.jpg'
 );
 
 CREATE TABLE sales_transactions (
@@ -35,30 +36,30 @@ CREATE TABLE sales_transactions (
     customer_id INT NOT NULL,
     product_id INT NOT NULL,
     sales_user_id INT NOT NULL,
-    quantity INT NOT NULL DEFAULT 1, -- Cột mới thêm: Số lượng xe bán ra
+    quantity INT NOT NULL DEFAULT 1,
     transaction_date DATETIME NOT NULL,
     FOREIGN KEY (sales_user_id) REFERENCES users(id),
     FOREIGN KEY (product_id) REFERENCES cars(product_id),
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
 
-
 INSERT INTO users (id, username, password, email, phone, role) VALUES 
 (1, 'admin', MD5('12345'), 'admin@gmail.com', '0999999999', 'admin'),
 (2, 'sale1', MD5('pass123'), 'sale1@dealer.com', '0987654321', 'sale'),
 (3, 'sale2', MD5('pass123'), 'sale2@dealer.com', '0912312312', 'sale');
 
-INSERT INTO cars (product_id, make, model, year, color, quantity, price) VALUES
-(1, 'VinFast', 'VF8', 2024, 'Red', 10, 1050000000.00),
-(2, 'Toyota', 'Vios', 2023, 'Silver', 25, 520000000.00),
-(3, 'Ford', 'Ranger', 2023, 'Orange', 15, 850000000.00),
-(4, 'Hyundai', 'Creta', 2024, 'White', 20, 640000000.00),
-(5, 'VinFast', 'VF9', 2024, 'Black', 5, 1490000000.00),
-(6, 'Toyota', 'Camry', 2023, 'Black', 8, 1150000000.00),
-(7, 'Ford', 'Everest', 2023, 'Blue', 12, 1200000000.00),
-(8, 'Honda', 'CR-V', 2024, 'White', 10, 1100000000.00),
-(9, 'Mazda', 'CX-5', 2023, 'Red', 18, 980000000.00),
-(10, 'Kia', 'Seltos', 2024, 'Yellow', 22, 750000000.00);
+INSERT INTO cars (product_id, make, model, year, color, quantity, price, image) VALUES
+(1, 'VinFast', 'VF8', 2024, 'Red', 10, 1050000000.00, 'VinFast-VF8-1.jpg'),
+(2, 'Toyota', 'Vios', 2023, 'Silver', 25, 520000000.00, 'toyota_vios_2023.jpg'),
+(3, 'Ford', 'Ranger', 2023, 'Orange', 15, 850000000.00, 'ford-ranger-2023.jpg'),
+(4, 'Hyundai', 'Creta', 2024, 'White', 20, 640000000.00, 'mau-xe-Hyundai-creta.png'),
+(5, 'VinFast', 'VF9', 2024, 'Black', 5, 1490000000.00, 'VinFast-VF9-9.jpg'),
+(6, 'Toyota', 'Camry', 2023, 'Black', 8, 1150000000.00, 'toyota camry 2023.jpg'),
+(7, 'Ford', 'Everest', 2023, 'Blue', 12, 1200000000.00, 'ford-everest-2023.jpg'),
+(8, 'Honda', 'CR-V', 2024, 'White', 10, 1100000000.00, 'honda cr-v.jpg'),
+(9, 'Mazda', 'CX-5', 2023, 'Red', 18, 980000000.00, 'mazda-cx-5-2.jpg'),
+(10, 'Kia', 'Seltos', 2024, 'Yellow', 22, 750000000.00, '2024-Kia-Seltos-1.jpg'),
+(11, 'VinFast', 'VF8', 2024, 'Blue', 5, 1050000000.00, 'VinFast-VF8-1blue.jpg');
 
 INSERT INTO customers (customer_id, full_name, email, phone, address) VALUES
 (1, 'Nguyen Van An', 'an@gmail.com', '0901234567', '789 CMT8 St, HCMC'),
@@ -74,6 +75,4 @@ INSERT INTO sales_transactions (customer_id, product_id, sales_user_id, quantity
 (4, 8, 3, 1, '2025-11-23 09:00:00'), 
 (5, 9, 2, 2, '2025-11-23 15:30:00'), 
 (1, 10, 1, 1, '2025-11-24 10:00:00'), 
-(2, 5, 3, 1, '2025-11-25 08:45:00'); 
-
-ALTER TABLE cars ADD COLUMN image VARCHAR(255) DEFAULT 'default.jpg';
+(2, 5, 3, 1, '2025-11-25 08:45:00');

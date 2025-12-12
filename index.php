@@ -62,7 +62,7 @@ $result = mysqli_query($link, $sql);
 
 <nav class="navbar navbar-public fixed-top">
     <div class="container d-flex justify-content-between align-items-center">
-        <a class="navbar-brand" href="index.php"><i class="fas fa-robot mr-2"></i>Skynet<span>Auto</span></a>
+        <a class="navbar-brand" href="index.php">Skynet<span>Auto</span></a>
         <a href="login.php" class="btn-manager"><i class="fas fa-user-shield mr-2"></i> CarManager Login</a>
     </div>
 </nav>
@@ -107,7 +107,7 @@ $result = mysqli_query($link, $sql);
                 
                 // Nếu cột image có dữ liệu và file tồn tại trên server
                 if (!empty($row['image'])) {
-                    $local_path = "uploads/" . $row['image'];
+                    $local_path = "./uploads/" . $row['image'];
                     if (file_exists($local_path)) {
                         $img_src = $local_path;
                     }
