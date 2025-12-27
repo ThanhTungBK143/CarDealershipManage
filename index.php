@@ -2,17 +2,29 @@
 include "connection.php";
 session_start();
 
-// --- XỬ LÝ SẮP XẾP ---
+// --- 1. LOGIC SẮP XẾP (GIỮ NGUYÊN TỪ CODE CŨ CỦA BẠN) ---
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
 $sql = "";
 
 switch ($sort) {
-    case 'price_asc': $sql = "SELECT * FROM cars ORDER BY price ASC"; break;
-    case 'price_desc': $sql = "SELECT * FROM cars ORDER BY price DESC"; break;
-    case 'bestseller':
-        $sql = "SELECT c.*, COALESCE(SUM(st.quantity), 0) as total_sold FROM cars c LEFT JOIN sales_transactions st ON c.product_id = st.product_id GROUP BY c.product_id ORDER BY total_sold DESC";
+    case 'price_asc': 
+        $sql = "SELECT * FROM cars ORDER BY price ASC"; 
         break;
-    default: $sql = "SELECT * FROM cars ORDER BY product_id DESC"; break;
+    case 'price_desc': 
+        $sql = "SELECT * FROM cars ORDER BY price DESC"; 
+        break;
+    case 'bestseller':
+        // Logic tìm xe bán chạy nhất (Join với bảng transactions)
+        $sql = "SELECT c.*, COALESCE(SUM(st.quantity), 0) as total_sold 
+                FROM cars c 
+                LEFT JOIN sales_transactions st ON c.product_id = st.product_id 
+                GROUP BY c.product_id 
+                ORDER BY total_sold DESC";
+        break;
+    default: 
+        // Mặc định: Xe mới nhập về lên đầu (Newest)
+        $sql = "SELECT * FROM cars ORDER BY product_id DESC"; 
+        break;
 }
 $result = mysqli_query($link, $sql);
 ?>
@@ -23,6 +35,9 @@ $result = mysqli_query($link, $sql);
     <title>Welcome to SkynetAuto</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <meta name="referrer" content="no-referrer">
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700,800&display=swap" rel="stylesheet">
@@ -62,7 +77,7 @@ $result = mysqli_query($link, $sql);
 
 <nav class="navbar navbar-public fixed-top">
     <div class="container d-flex justify-content-between align-items-center">
-        <a class="navbar-brand" href="index.php">Skynet<span>Auto</span></a>
+        <a class="navbar-brand" href="index.php"><i class="fas fa-robot mr-2"></i>Skynet<span>Auto</span></a>
         <a href="login.php" class="btn-manager"><i class="fas fa-user-shield mr-2"></i> CarManager Login</a>
     </div>
 </nav>
@@ -101,22 +116,25 @@ $result = mysqli_query($link, $sql);
                 $price = number_format($row['price'], 2);
                 $qty = $row['quantity'];
                 
-                // --- XỬ LÝ ẢNH LOCAL ---
-                // Mặc định là ảnh giữ chỗ nếu chưa có ảnh
+                // --- 2. LOGIC XỬ LÝ ẢNH THÔNG MINH (Đã cập nhật) ---
                 $img_src = "https://via.placeholder.com/600x400.png?text=No+Image"; 
                 
-                // Nếu cột image có dữ liệu và file tồn tại trên server
                 if (!empty($row['image'])) {
-                    $local_path = "./uploads/" . $row['image'];
-                    if (file_exists($local_path)) {
-                        $img_src = $local_path;
+                    // Nếu là Link Online (Google Drive, Postimg, Imgur...)
+                    if (strpos($row['image'], 'http') === 0) {
+                        $img_src = $row['image'];
+                    } 
+                    // Nếu là tên file cũ trong thư mục uploads/
+                    else {
+                        $img_src = "uploads/" . trim($row['image']);
                     }
                 }
 
+                // Hiển thị Card Xe
                 echo '<div class="col-lg-4 col-md-6 mb-4">';
                 echo '  <div class="car-card">';
                 echo '      <div style="height:200px; overflow:hidden; background:#eee;">';
-                echo '          <img src="'.$img_src.'" class="car-img-top" alt="'.$make.'">';
+                echo '          <img src="'.$img_src.'" class="car-img-top" alt="'.$make.'" onerror="this.src=\'https://via.placeholder.com/600x400?text=Error+Loading+Image\'">';
                 echo '      </div>';
                 echo '      <div class="card-body">';
                 echo '          <div class="d-flex justify-content-between align-items-start">';
